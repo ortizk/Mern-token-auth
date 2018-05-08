@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 
 class Signup extends Component {
 	constructor(props){
@@ -15,16 +16,26 @@ class Signup extends Component {
 	}
 
 	handleEmailChange = (e) => {
-	this.setState({ email: e.target.value});
+		this.setState({ email: e.target.value});
 	}
 
 	handlePasswordChange = (e) => {
-	this.setState({ password: e.target.value});
+		this.setState({ password: e.target.value});
 	}
 
 	handleSubmit = (e) => {
 		e.preventDefault();
 		console.log('form was submitted', this.state);
+		//THIS IS WERE WE CONNECT THE BACKEND
+		// this route matches the router auth route on the backend
+		// for axios, the first parameter is where we want to go, and the second is what the data we want to send
+		axios.post('/auth/signup', this.state)
+		.then(result => {
+			console.log('SUCCESS', result)
+		})
+		.catch(err => {
+			console.log('ERROR', err);
+		});
 	}
 
 
