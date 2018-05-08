@@ -8,14 +8,15 @@ var expressJWT = require('express-jwt');
 var jwt = require('jsonwebtoken');
 
 // POST /auth/login route - returns a JWT
-router.post('/login', function(req, res, next) {
+router.post('/login', function(req, res) {
   console.log('/auth/login post route', req.body);
 
   // Find out if the user exists (for login, they should)
-  User.findOne({ email: req.body. email })
+  User.findOne({ email: req.body.email })
   .then(function(user){
   	if(!user || !user.password){
   		return res.status(403).send('User not found');
+  		// this will show up as a console log on login err
   	}
 
   	//The user exists. Now, we want to validate the password
@@ -72,10 +73,9 @@ router.post('/signup', function(req, res) {
 });
 
 // This is checked on a browser refresh
-router.post('/me/from/token', function(req, res, next) {
-  // check header or url parameters or post parameters for token
+router.post('/me/from/token', function(req, res) {
   console.log('find user from token', req.body);
-  res.send('keep logged in');
+  res.send({ user: req.user });
 });
 
 module.exports = router;

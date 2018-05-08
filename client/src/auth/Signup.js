@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 
 class Signup extends Component {
@@ -32,6 +33,10 @@ class Signup extends Component {
 		axios.post('/auth/signup', this.state)
 		.then(result => {
 			console.log('SUCCESS', result)
+			// Add the newly received token to LS
+			localStorage.setItem('mernToken', result.data.token);
+			// Udate the user with a call to App.js
+			this.props.updateUser();
 		})
 		.catch(err => {
 			console.log('ERROR', err);
@@ -40,6 +45,9 @@ class Signup extends Component {
 
 
 	render() {
+		if(this.props.user){
+			return (<Redirect to="/profile" />);
+		}
 		return(
 			<div>
 				<h1>Signup as a new user</h1>

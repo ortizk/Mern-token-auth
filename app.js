@@ -1,6 +1,7 @@
 require('dotenv').config();
 var bodyParser = require('body-parser');
 var express = require('express');
+var expressJWT = require('express-jwt');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var mongoose = require('mongoose');
@@ -24,7 +25,20 @@ app.use(function(req, res, next) {
 });
 
 // Controllers
-app.use('/auth', require('./routes/auth'));
+app.use('/auth', expressJWT({
+	secret: process.env.JWT_SECRET,
+	getToken: function fromRequest(req){
+		if(req.body.headers.Authorization && req.body.headers.Authorization.split(' ')[0] === 'Bearer'){
+			return req.body.headers.Authorization.split(' ')[1];
+		}
+		return null;
+	}
+}).unless({
+	path:[
+	{ url: '/auth/login', methods: ['POST'] },
+	{ url: '/auth/signup', methods: ['POST'] }
+	]
+}), require('./routes/auth'));
 
 app.get('*', function(req, res, next) {
 	// this is where in react it will live and be built
