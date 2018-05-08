@@ -18,23 +18,25 @@ var userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8,
+    minlength: 6,
     maxlength: 99
   }
 });
 
 // Override 'toJSON' to prevent the password from being returned with the user
+// converting to json to send to react or any front end. But the front end doesn't need to know the password
 userSchema.set('toJSON', {
-  transform: function(doc, ret, options) {
+  transform: function(doc, user, options) {
     var returnJson = {
-      id: ret._id,
-      email: ret.email,
-      name: ret.name
+      id: user._id,
+      email: user.email,
+      name: user.name
     };
     return returnJson;
   }
 });
 
+//CHECKS IF PASSWORD IS CORRENT
 userSchema.methods.authenticated = function(password, callback) {
   bcrypt.compare(password, this.password, function(err, res) {
     if (err) {
@@ -46,6 +48,7 @@ userSchema.methods.authenticated = function(password, callback) {
 }
 
 // Mongoose's version of a beforeCreate hook
+// BEFORE SAVE, WE ARE HASING THE PASSWORD
 userSchema.pre('save', function(next) {
   var hash = bcrypt.hashSync(this.password, 10);
   // store the hash as the user's password
